@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct NewsAppApp: App {
+    init() {
+        FontRegistrar.registerFonts()
+    }
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NewsFeedView()
         }
     }
 }

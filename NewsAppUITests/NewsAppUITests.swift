@@ -1,41 +1,51 @@
-//
-//  NewsAppUITests.swift
-//  NewsAppUITests
-//
-//  Created by Mob_04 on 18/09/26.
-//
-
 import XCTest
 
 final class NewsAppUITests: XCTestCase {
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testFastSearchAndDetailSwipe() throws {
         let app = XCUIApplication()
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
+        // Test Fast Search
+        let searchField = app.textFields["Search"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 10), "Search bar should appear")
+        searchField.tap()
+        searchField.typeText("galaxy")
 
-    @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
-        }
+        // Instant results appear
+        let galaxyArticle = app.staticTexts.matching(NSPredicate(format: "label CONTAINS[c] 'galaxy'")).firstMatch
+        XCTAssertTrue(galaxyArticle.waitForExistence(timeout: 3), "Galaxy article should appear instantly")
+
+        let searchScreenshot = app.screenshot()
+        let searchPath = "/Users/sonoma/.gemini/antigravity-ide/brain/4ae64ad1-fd1d-488e-8fc6-71ee7e8079bf/fast_search_screen.png"
+        try? searchScreenshot.pngRepresentation.write(to: URL(fileURLWithPath: searchPath))
+
+        // Tap the search result to open detail
+        galaxyArticle.tap()
+
+        // Detail screen should load instantly with image
+        let trendingLabel = app.staticTexts["Trending"]
+        XCTAssertTrue(trendingLabel.waitForExistence(timeout: 5), "Detail screen should show Trending")
+
+        sleep(1)
+        let detailScreenshot = app.screenshot()
+        let detailPath = "/Users/sonoma/.gemini/antigravity-ide/brain/4ae64ad1-fd1d-488e-8fc6-71ee7e8079bf/detail_screen_updated.png"
+        try? detailScreenshot.pngRepresentation.write(to: URL(fileURLWithPath: detailPath))
+
+        // Swipe left to navigate to next article
+        app.swipeLeft()
+        sleep(1)
+        let swipedScreenshot = app.screenshot()
+        let swipedPath = "/Users/sonoma/.gemini/antigravity-ide/brain/4ae64ad1-fd1d-488e-8fc6-71ee7e8079bf/detail_swiped_updated.png"
+        try? swipedScreenshot.pngRepresentation.write(to: URL(fileURLWithPath: swipedPath))
+
+        // Swipe right to return to previous article
+        app.swipeRight()
+        sleep(1)
     }
 }
