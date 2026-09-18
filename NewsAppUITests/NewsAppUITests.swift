@@ -21,31 +21,30 @@ final class NewsAppUITests: XCTestCase {
         let galaxyArticle = app.staticTexts.matching(NSPredicate(format: "label CONTAINS[c] 'galaxy'")).firstMatch
         XCTAssertTrue(galaxyArticle.waitForExistence(timeout: 3), "Galaxy article should appear instantly")
 
-        let searchScreenshot = app.screenshot()
-        let searchPath = "/Users/sonoma/.gemini/antigravity-ide/brain/4ae64ad1-fd1d-488e-8fc6-71ee7e8079bf/fast_search_screen.png"
-        try? searchScreenshot.pngRepresentation.write(to: URL(fileURLWithPath: searchPath))
+        // Take search screenshot
+        let searchAttachment = XCTAttachment(screenshot: app.screenshot())
+        searchAttachment.lifetime = .keepAlways
+        add(searchAttachment)
 
         // Tap the search result to open detail
         galaxyArticle.tap()
 
-        // Detail screen should load instantly with image
+        // Detail screen should load
         let trendingLabel = app.staticTexts["Trending"]
         XCTAssertTrue(trendingLabel.waitForExistence(timeout: 5), "Detail screen should show Trending")
 
-        sleep(1)
-        let detailScreenshot = app.screenshot()
-        let detailPath = "/Users/sonoma/.gemini/antigravity-ide/brain/4ae64ad1-fd1d-488e-8fc6-71ee7e8079bf/detail_screen_updated.png"
-        try? detailScreenshot.pngRepresentation.write(to: URL(fileURLWithPath: detailPath))
+        let detailAttachment = XCTAttachment(screenshot: app.screenshot())
+        detailAttachment.lifetime = .keepAlways
+        add(detailAttachment)
 
         // Swipe left to navigate to next article
         app.swipeLeft()
-        sleep(1)
-        let swipedScreenshot = app.screenshot()
-        let swipedPath = "/Users/sonoma/.gemini/antigravity-ide/brain/4ae64ad1-fd1d-488e-8fc6-71ee7e8079bf/detail_swiped_updated.png"
-        try? swipedScreenshot.pngRepresentation.write(to: URL(fileURLWithPath: swipedPath))
+
+        let swipedAttachment = XCTAttachment(screenshot: app.screenshot())
+        swipedAttachment.lifetime = .keepAlways
+        add(swipedAttachment)
 
         // Swipe right to return to previous article
         app.swipeRight()
-        sleep(1)
     }
 }
